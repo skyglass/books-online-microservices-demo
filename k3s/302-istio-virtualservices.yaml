@@ -1,0 +1,96 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: boutique
+spec:
+  hosts:
+    - keycloak.skycomposer.net
+  gateways:
+    - istio-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /boutique
+      route:
+        - destination:
+            host: boutique.default.svc.cluster.local
+            port:
+              number: 80
+          headers:
+            request:
+              set:
+                x-forwarded-proto: https
+
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: grafana
+spec:
+  hosts:
+    - keycloak.skycomposer.net
+  gateways:
+    - istio-gateway
+  http:
+    - match:
+      - uri:
+          prefix: /grafana
+      route:
+        - destination:
+            host: grafana.istio-system.svc.cluster.local
+            port:
+              number: 3000            
+          headers:
+            request:
+              set:
+                x-forwarded-proto: https
+
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali
+spec:
+  hosts:
+    - keycloak.skycomposer.net
+  gateways:
+    - istio-gateway
+  http:
+    - match:
+      - uri:
+          prefix: /kiali
+      route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001            
+          headers:
+            request:
+              set:
+                x-forwarded-proto: https
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: tracing
+spec:
+  hosts:
+    - keycloak.skycomposer.net
+  gateways:
+    - istio-gateway
+  http:
+    - match:
+      - uri:
+          prefix: /jaeger
+      route:
+        - destination:
+            host: tracing.istio-system.svc.cluster.local
+            port:
+              number: 80            
+          headers:
+            request:
+              set:
+                x-forwarded-proto: https
