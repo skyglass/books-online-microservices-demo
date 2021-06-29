@@ -10,12 +10,12 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /boutique
+            prefix: /
       route:
         - destination:
             host: boutique.default.svc.cluster.local
             port:
-              number: 80
+              number: 8080
           headers:
             request:
               set:

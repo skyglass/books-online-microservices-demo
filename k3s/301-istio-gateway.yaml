@@ -2,6 +2,11 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: istio-gateway
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-west-1:217264062492:certificate/98b6a642-3bc3-4101-bee6-aea014856562
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
 spec: 
   selector:
     istio: ingressgateway
@@ -12,3 +17,13 @@ spec:
       protocol: HTTP
     hosts:
     - "keycloak.skycomposer.net"
+    - "boutique.keycloak.skycomposer.net"
+    tls:
+      httpsRedirect: true # sends 301 redirect for http requests
+  - port:
+      number: 443
+      name: https-443
+      protocol: HTTP
+    hosts:
+    - "keycloak.skycomposer.net"
+    - "boutique.keycloak.skycomposer.net"    

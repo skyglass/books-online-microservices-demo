@@ -1,0 +1,15 @@
+istioctl install --set profile=demo --set meshConfig.accessLogFile="/dev/stdout" --set meshConfig.accessLogEncoding=JSON -y
+
+istioctl install --set profile=demo -y
+
+kubectl label namespace default istio-injection=enabled
+
+istioctl proxy-config log $(make ingress-pod) --level filter:debug
+
+kubectl logs $(make ingress-pod) -c istio-proxy
+
+istioctl install --set profile=demo \
+  --set meshConfig.accessLogFile="/dev/stdout" \
+  --set meshConfig.accessLogEncoding=JSON \
+  --set meshConfig.defaultConfig.tracing.zipkin.address=zipkin.istio-system:9411 \
+  -y
