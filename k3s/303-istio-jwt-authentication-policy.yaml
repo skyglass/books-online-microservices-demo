@@ -1,0 +1,42 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: "jwt-peer-authentication"
+spec:
+  selector:
+    matchLabels:
+      app: product-composite
+  mtls:
+    mode: PERMISSIVE
+---
+
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: "jwt-request-authentication"
+spec:
+  selector:
+    matchLabels:
+      app: product-composite
+  jwtRules:
+  - issuer: "https://auth.justin-tech.com/auth/realms/Justin-Tech"
+    jwksUri: "https://auth.justin-tech.com/auth/realms/Justin-Tech/protocol/openid-connect/certs" 
+    forwardOriginalToken: true
+
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: "jwt-authorization-policy"
+spec:
+ action: DENY
+ selector:
+   matchLabels:
+     app: product-composite
+ rules:
+ - from:
+   - source:
+       notRequestPrincipals: ["*"]
+   to:
+   - operation:
+       notPaths: ["/actuator/health", "/actuator/circuitbreakerevents/*", "/actuator/prometheus"]

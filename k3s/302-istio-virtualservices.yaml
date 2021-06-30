@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: boutique
+  name: keycloak
 spec:
   hosts:
     - keycloak.skycomposer.net
@@ -13,9 +13,9 @@ spec:
             prefix: /
       route:
         - destination:
-            host: boutique.default.svc.cluster.local
+            host: keycloak.default.svc.cluster.local
             port:
-              number: 8080
+              number: 80
           headers:
             request:
               set:
@@ -88,6 +88,31 @@ spec:
       route:
         - destination:
             host: tracing.istio-system.svc.cluster.local
+            port:
+              number: 80            
+          headers:
+            request:
+              set:
+                x-forwarded-proto: https
+
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: product-composite
+spec:
+  hosts:
+    - keycloak.skycomposer.net
+  gateways:
+    - istio-gateway
+  http:
+    - match:
+      - uri:
+          prefix: /product-composite
+      route:
+        - destination:
+            host: product-composite.default.svc.cluster.local
             port:
               number: 80            
           headers:

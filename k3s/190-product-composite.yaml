@@ -1,0 +1,71 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-composite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-composite
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "4004"
+        prometheus.io/scheme: http
+        prometheus.io/path: "/actuator/prometheus"
+      labels:
+        app: product-composite
+        version: v1
+    spec:
+      containers:
+      - name: comp
+        image: hands-on/product-composite-service:v1
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: rabbitmq-credentials
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "200Mi"
+          limits:
+            memory: "400Mi"
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /actuator/info
+            port: 4004
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 30
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /actuator/health
+            port: 4004
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+          successThreshold: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-composite
+spec:
+  selector:
+    app: product-composite
+  ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 4004
+      name: http-mgm
+      targetPort: 4004
