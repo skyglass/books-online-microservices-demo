@@ -69,7 +69,7 @@
 				</configuration>
 				<dependencies>
 					<dependency>
-						<groupId>skyglass.microservices</groupId>
+						<groupId>skyglass</groupId>
 						<artifactId>build-tools</artifactId>
 						<version>0.2</version>
 					</dependency>
@@ -259,7 +259,8 @@
 		</pluginRepository>
 	</pluginRepositories>   
 
-    <modules>  
+    <modules>
+	   <module>build-tools</module>	    	
 	   <module>books-online-api</module>	
        <module>books-online-util</module>		   
        <module>review-service</module>	
