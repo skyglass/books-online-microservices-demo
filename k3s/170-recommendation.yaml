@@ -20,11 +20,13 @@ spec:
     spec:
       containers:
       - name: rec
-        image: hands-on/recommendation-service:v1
+        image: skyglass/recommendation-service:1.0.0
         imagePullPolicy: Always
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: "docker,prod"
+        - name: SPRING_CONFIG_LOCATION
+          value: file:/config-repo/application.yml,file:/config-repo/recommendation.yml
         envFrom:
         - secretRef:
             name: rabbitmq-credentials
@@ -37,26 +39,13 @@ spec:
             memory: "200Mi"
           limits:
             memory: "400Mi"
-        livenessProbe:
-          httpGet:
-            scheme: HTTP
-            path: /actuator/info
-            port: 4004
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 2
-          failureThreshold: 30
-          successThreshold: 1
-        readinessProbe:
-          httpGet:
-            scheme: HTTP
-            path: /actuator/health
-            port: 4004
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 2
-          failureThreshold: 3
-          successThreshold: 1
+        volumeMounts:
+        - name: config-repo-volume
+          mountPath: /config-repo
+      volumes:
+      - name: config-repo-volume
+        configMap:
+          name: config-repo-recommendation          
 
 ---
 apiVersion: v1

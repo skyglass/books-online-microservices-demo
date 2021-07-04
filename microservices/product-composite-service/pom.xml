@@ -44,7 +44,7 @@
             <groupId>skyglass</groupId>
             <artifactId>books-online-util</artifactId>
             <version>${project.version}</version>
-        </dependency>	        
+        </dependency>      	        
 	
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+        </dependency>       
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -68,6 +68,16 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>        
+        
+	    <dependency>
+	      <groupId>org.springframework.security.oauth.boot</groupId>
+	      <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+	    </dependency>        
         
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -98,7 +108,13 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
-        </dependency>   
+        </dependency> 
+	    
+	    <dependency>
+	      <groupId>org.projectlombok</groupId>
+	      <artifactId>lombok</artifactId>
+	      <optional>true</optional>
+	    </dependency>          
         
         <dependency>
             <groupId>io.github.resilience4j</groupId>

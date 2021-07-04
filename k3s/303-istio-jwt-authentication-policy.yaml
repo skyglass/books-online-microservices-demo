@@ -19,8 +19,8 @@ spec:
     matchLabels:
       app: product-composite
   jwtRules:
-  - issuer: "https://auth.justin-tech.com/auth/realms/Justin-Tech"
-    jwksUri: "https://auth.justin-tech.com/auth/realms/Justin-Tech/protocol/openid-connect/certs" 
+  - issuer: https://keycloak.skycomposer.net/auth/realms/dev
+    jwksUri: https://keycloak.skycomposer.net/auth/realms/dev/.well-known/openid-configuration
     forwardOriginalToken: true
 
 ---
@@ -39,4 +39,4 @@ spec:
        notRequestPrincipals: ["*"]
    to:
    - operation:
-       notPaths: ["/actuator/health", "/actuator/circuitbreakerevents/*", "/actuator/prometheus"]
+       notPaths: ["/actuator/health", "/actuator/circuitbreakerevents/*", "/actuator/prometheus", "/app-health/comp/readyz", "/app-health/comp/livez"]

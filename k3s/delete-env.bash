@@ -1,5 +1,10 @@
 #!/usr/bin/env bash -ex
 
+kubectl delete configmap config-repo-product-composite
+kubectl delete configmap config-repo-product
+kubectl delete configmap config-repo-recommendation
+kubectl delete configmap config-repo-review 
+
 kubectl delete secret rabbitmq-server-credentials
 
 kubectl delete secret rabbitmq-credentials

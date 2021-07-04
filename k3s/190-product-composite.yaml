@@ -21,8 +21,13 @@ spec:
     spec:
       containers:
       - name: comp
-        image: hands-on/product-composite-service:v1
+        image: skyglass/product-composite-service:1.0.0
         imagePullPolicy: Always
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "docker"
+        - name: SPRING_CONFIG_LOCATION
+          value: file:/config-repo/application.yml,file:/config-repo/product-composite.yml        
         envFrom:
         - secretRef:
             name: rabbitmq-credentials
@@ -52,7 +57,14 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 2
           failureThreshold: 3
-          successThreshold: 1
+          successThreshold: 1            
+        volumeMounts:
+        - name: config-repo-volume
+          mountPath: /config-repo
+      volumes:
+      - name: config-repo-volume
+        configMap:
+          name: config-repo-product-composite          
 
 ---
 apiVersion: v1

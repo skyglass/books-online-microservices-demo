@@ -1,5 +1,18 @@
 #!/usr/bin/env bash -ex
 
+istioctl install --set profile=demo \
+  --set meshConfig.accessLogFile="/dev/stdout" \
+  --set meshConfig.accessLogEncoding=JSON \
+  --set meshConfig.defaultConfig.tracing.zipkin.address=zipkin.istio-system:9411 \
+  -y
+
+kubectl label namespace default istio-injection=enabled
+
+kubectl create configmap config-repo-product-composite --from-file=../k3s/config-repo/application.yml --from-file=../k3s/config-repo/product-composite.yml --save-config
+kubectl create configmap config-repo-product           --from-file=../k3s/config-repo/application.yml --from-file=../k3s/config-repo/product.yml --save-config
+kubectl create configmap config-repo-recommendation    --from-file=../k3s/config-repo/application.yml --from-file=../k3s/config-repo/recommendation.yml --save-config
+kubectl create configmap config-repo-review            --from-file=../k3s/config-repo/application.yml --from-file=../k3s/config-repo/review.yml --save-config
+
 kubectl create secret generic rabbitmq-server-credentials \
     --from-literal=RABBITMQ_DEFAULT_USER=rabbit-user-dev \
     --from-literal=RABBITMQ_DEFAULT_PASS=rabbit-pwd-dev \
