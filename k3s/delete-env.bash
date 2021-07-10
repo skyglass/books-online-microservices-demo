@@ -18,5 +18,5 @@ kubectl delete secret mysql-server-credentials
 kubectl delete secret mysql-credentials
 
 
-# Deploy the resources and wait for their pods to become ready
+# Delete all resources
 kubectl delete -f ../k3s
