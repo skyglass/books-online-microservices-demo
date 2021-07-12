@@ -39,4 +39,4 @@ spec:
        notRequestPrincipals: ["*"]
    to:
    - operation:
-       notPaths: ["/actuator/health", "/actuator/circuitbreakerevents/*", "/actuator/prometheus", "/app-health/comp/readyz", "/app-health/comp/livez"]
+       notPaths: ["/healthz/ready", "/actuator/info", "/actuator/health", "/actuator/circuitbreakerevents/*", "/actuator/prometheus", "/app-health/comp/readyz", "/app-health/comp/livez", "/stats/prometheus"]

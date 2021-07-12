@@ -51,7 +51,7 @@ public class SecurityConfigurer extends ResourceServerConfigurerAdapter {
 				.csrf()
 				.disable()
 				.authorizeExchange()
-				.pathMatchers("/*/**").permitAll();
+				.pathMatchers("/actuator/**").permitAll();
 		//.pathMatchers(POST, "/product-composite/**").hasAuthority("SCOPE_product:write")
 		//.pathMatchers(DELETE, "/product-composite/**").hasAuthority("SCOPE_product:write")
 		//.pathMatchers(GET, "/product-composite/**").hasAuthority("SCOPE_product:read")

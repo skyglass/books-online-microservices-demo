@@ -50,6 +50,7 @@ api:
 
 server.port: 7000
 server.error.include-message: always
+server.servlet.context-path: /product-composite
 
 spring.application.name: product-composite
 
@@ -70,46 +71,46 @@ spring.cloud.stream:
       producer:
         required-groups: auditGroup
 
-spring.security.oauth2.resourceserver.jwt.jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/dev/.well-known/openid-configuration
+# spring.security.oauth2.resourceserver.jwt.jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/dev/.well-known/openid-configuration
 
 # Can be set to false to disable security during local development
-rest.security.enabled: true
-rest.security.api-matcher: "/api/**"
-rest.security.cors.allowed-origins: "*"
-rest.security.cors.allowed-headers: "*"
-rest.security.cors.allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
-rest.security.cors.max-age: 3600
+# rest.security.enabled: true
+# rest.security.api-matcher: "/api/**"
+# rest.security.cors.allowed-origins: "*"
+# rest.security.cors.allowed-headers: "*"
+# rest.security.cors.allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+# rest.security.cors.max-age: 3600
 
-rest.security.issuer-uri: https://keycloak.skycomposer.net/auth/realms/dev
-security.oauth2.resource.id: product-composite
-security.oauth2.resource.token-info-uri: https://keycloak.skycomposer.net/auth/realms/dev/protocol/openid-connect/token/introspect
-security.oauth2.resource.user-info-uri: https://keycloak.skycomposer.net/auth/realms/dev/protocol/openid-connect/userinfo
-security.oauth2.resource.jwt.key-value: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0jOCRdcsZL2eWcd+TyaH4/hZoIZAKlf/3/dh1Zywtu8we03rUsIeu+utQd4LOg7HNezyKqPBxDo2Xqx2QW2tt6o99BPf+lmJeo19QOmKr0FFm6gznogLfGkShQ5SBCH4Lkf1AJ+iq3cnhBiZJvVuvCHbuRFBtwQDhFl3PfhqlKr+UNpOpN9mRUV3nUscwyh+vLfXvt+y+/AwlAKmishhqy+5WlcdBIzUiSYZB2BHJYbTevcrZhUVNN/4jUjf7KjonkmjcwltRWh7L49NwE4XwdWVzVYc+T6+hN3+ifaeSsi3Kxyg7ld/7+a+Y7OEMHRjEINCXe8i4HiZKItlszBzcwIDAQAB\n-----END PUBLIC KEY-----
+# rest.security.issuer-uri: https://keycloak.skycomposer.net/auth/realms/dev
+# security.oauth2.resource.id: product-composite
+# security.oauth2.resource.token-info-uri: https://keycloak.skycomposer.net/auth/realms/dev/protocol/openid-connect/token/introspect
+# security.oauth2.resource.user-info-uri: https://keycloak.skycomposer.net/auth/realms/dev/protocol/openid-connect/userinfo
+# security.oauth2.resource.jwt.key-value: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0jOCRdcsZL2eWcd+TyaH4/hZoIZAKlf/3/dh1Zywtu8we03rUsIeu+utQd4LOg7HNezyKqPBxDo2Xqx2QW2tt6o99BPf+lmJeo19QOmKr0FFm6gznogLfGkShQ5SBCH4Lkf1AJ+iq3cnhBiZJvVuvCHbuRFBtwQDhFl3PfhqlKr+UNpOpN9mRUV3nUscwyh+vLfXvt+y+/AwlAKmishhqy+5WlcdBIzUiSYZB2BHJYbTevcrZhUVNN/4jUjf7KjonkmjcwltRWh7L49NwE4XwdWVzVYc+T6+hN3+ifaeSsi3Kxyg7ld/7+a+Y7OEMHRjEINCXe8i4HiZKItlszBzcwIDAQAB\n-----END PUBLIC KEY-----
 
 app.product-service.timeoutSec: 2
 
-resilience4j.retry:
-  backends:
-    product:
-      maxRetryAttempts: 3
-      waitDuration: 1000
-      retryExceptions:
-      - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
+# resilience4j.retry:
+#   backends:
+#     product:
+#       maxRetryAttempts: 3
+#       waitDuration: 1000
+#       retryExceptions:
+#       - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
 
-management.health.circuitbreakers.enabled: true
+# management.health.circuitbreakers.enabled: true
 
-resilience4j.circuitbreaker:
-  backends:
-    product:
-      registerHealthIndicator: true
-      ringBufferSizeInClosedState: 5
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
-      ringBufferSizeInHalfOpenState: 3
-      automaticTransitionFromOpenToHalfOpenEnabled: true
-      ignoreExceptions:
-        - se.magnus.util.exceptions.InvalidInputException
-        - se.magnus.util.exceptions.NotFoundException
+# resilience4j.circuitbreaker:
+#   backends:
+#     product:
+#       registerHealthIndicator: true
+#       ringBufferSizeInClosedState: 5
+#       failureRateThreshold: 50
+#       waitDurationInOpenState: 10000
+#      ringBufferSizeInHalfOpenState: 3
+#       automaticTransitionFromOpenToHalfOpenEnabled: true
+#       ignoreExceptions:
+#         - se.magnus.util.exceptions.InvalidInputException
+#         - se.magnus.util.exceptions.NotFoundException
 
 logging:
   level:

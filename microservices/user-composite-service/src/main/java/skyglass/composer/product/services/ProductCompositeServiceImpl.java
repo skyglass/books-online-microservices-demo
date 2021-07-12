@@ -1,4 +1,4 @@
-package se.magnus.microservices.composite.product.services;
+package skyglass.composer.product.services;
 
 import static java.util.logging.Level.FINE;
 
@@ -29,7 +29,6 @@ import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
 import se.magnus.util.exceptions.InvalidInputException;
 import se.magnus.util.exceptions.NotFoundException;
-import se.magnus.util.http.ServiceUtil;
 
 @RestController
 public class ProductCompositeServiceImpl implements ProductCompositeService {
