@@ -12,10 +12,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import reactor.core.publisher.Mono;
 
 @Api(description = "REST API for composite product information.")
 public interface ProductCompositeService {
+
+	public static final String BEARER_KEY_SECURITY_SCHEME = "bearer-key";
 
 	/**
 	 * Sample usage:
@@ -31,8 +32,9 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 400, message = "Bad Request, invalid format of the request. See response message for more information."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
+	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@PostMapping(value = "/product-composite", consumes = "application/json")
-	Mono<Void> createCompositeProduct(@RequestBody ProductAggregate body);
+	Void createCompositeProduct(@RequestBody ProductAggregate body);
 
 	/**
 	 * Sample usage: curl $HOST:$PORT/product-composite/1
@@ -46,8 +48,9 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 404, message = "Not found, the specified id does not exist."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
+	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@GetMapping(value = "/product-composite/{productId}", produces = "application/json")
-	Mono<ProductAggregate> getCompositeProduct(
+	ProductAggregate getCompositeProduct(
 			@RequestHeader HttpHeaders headers,
 			@PathVariable int productId);
 
@@ -63,6 +66,7 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 400, message = "Bad Request, invalid format of the request. See response message for more information."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
+	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@DeleteMapping(value = "/product-composite/{productId}")
-	Mono<Void> deleteCompositeProduct(@PathVariable int productId);
+	Void deleteCompositeProduct(@PathVariable int productId);
 }

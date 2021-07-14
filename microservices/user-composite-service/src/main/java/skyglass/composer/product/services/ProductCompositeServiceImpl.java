@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
@@ -31,6 +32,7 @@ import se.magnus.util.exceptions.InvalidInputException;
 import se.magnus.util.exceptions.NotFoundException;
 
 @RestController
+@RequestMapping("/api")
 public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceImpl.class);
@@ -48,8 +50,8 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
-	public Mono<Void> createCompositeProduct(ProductAggregate body) {
-		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).then();
+	public Void createCompositeProduct(ProductAggregate body) {
+		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).then().block();
 	}
 
 	public void internalCreateCompositeProduct(SecurityContext sc, ProductAggregate body) {
@@ -86,7 +88,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
-	public Mono<ProductAggregate> getCompositeProduct(HttpHeaders requestHeaders, int productId) {
+	public ProductAggregate getCompositeProduct(HttpHeaders requestHeaders, int productId) {
 
 		LOG.info("Will get composite product info for product.id={}", productId);
 
@@ -100,12 +102,12 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 				integration.getRecommendations(headers, productId).collectList(),
 				integration.getReviews(headers, productId).collectList())
 				.doOnError(ex -> LOG.warn("getCompositeProduct failed: {}", ex.toString()))
-				.log(null, FINE);
+				.log(null, FINE).block();
 	}
 
 	@Override
-	public Mono<Void> deleteCompositeProduct(int productId) {
-		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).then();
+	public Void deleteCompositeProduct(int productId) {
+		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).then().block();
 	}
 
 	private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {
