@@ -80,20 +80,19 @@ management:
       show-details: always        
 
 
-keycloak:
-  auth-server-url: https://keycloak.skycomposer.net/auth
-  realm: demo
-  resource: demoapp
-  ssl-required: external
-  public-client: true
-  principal-attribute: preferred_username
-  use-resource-role-mappings: true
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak.skycomposer.net/auth/realms/demo
+          jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
 
-springdoc:
-  show-actuator: true
-  swagger-ui:
-    groups-order: DESC
-    disable-swagger-default-url: true
+# springdoc:
+#   show-actuator: true
+#   swagger-ui:
+#     groups-order: DESC
+#     disable-swagger-default-url: true
 
 # spring:
 #   security:

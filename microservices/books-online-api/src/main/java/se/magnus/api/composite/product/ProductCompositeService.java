@@ -16,8 +16,6 @@ import io.swagger.annotations.ApiResponses;
 @Api(description = "REST API for composite product information.")
 public interface ProductCompositeService {
 
-	public static final String BEARER_KEY_SECURITY_SCHEME = "bearer-key";
-
 	/**
 	 * Sample usage:
 	 *
@@ -34,7 +32,7 @@ public interface ProductCompositeService {
 	})
 	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@PostMapping(value = "/product-composite", consumes = "application/json")
-	Void createCompositeProduct(@RequestBody ProductAggregate body);
+	void createCompositeProduct(@RequestBody ProductAggregate body);
 
 	/**
 	 * Sample usage: curl $HOST:$PORT/product-composite/1
@@ -68,5 +66,5 @@ public interface ProductCompositeService {
 	})
 	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
 	@DeleteMapping(value = "/product-composite/{productId}")
-	Void deleteCompositeProduct(@PathVariable int productId);
+	void deleteCompositeProduct(@PathVariable int productId);
 }

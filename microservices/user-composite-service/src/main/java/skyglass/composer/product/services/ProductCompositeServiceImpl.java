@@ -50,8 +50,8 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
-	public Void createCompositeProduct(ProductAggregate body) {
-		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).then().block();
+	public void createCompositeProduct(ProductAggregate body) {
+		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).then().block();
 	}
 
 	public void internalCreateCompositeProduct(SecurityContext sc, ProductAggregate body) {
@@ -106,8 +106,8 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
-	public Void deleteCompositeProduct(int productId) {
-		return ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).then().block();
+	public void deleteCompositeProduct(int productId) {
+		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).then().block();
 	}
 
 	private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {
