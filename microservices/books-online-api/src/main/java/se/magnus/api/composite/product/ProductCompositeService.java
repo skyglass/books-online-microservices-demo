@@ -30,8 +30,7 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 400, message = "Bad Request, invalid format of the request. See response message for more information."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
-	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
-	@PostMapping(value = "/product-composite", consumes = "application/json")
+	@PostMapping(value = "/product", consumes = "application/json")
 	void createCompositeProduct(@RequestBody ProductAggregate body);
 
 	/**
@@ -46,8 +45,7 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 404, message = "Not found, the specified id does not exist."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
-	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
-	@GetMapping(value = "/product-composite/{productId}", produces = "application/json")
+	@GetMapping(value = "/product/{productId}", produces = "application/json")
 	ProductAggregate getCompositeProduct(
 			@RequestHeader HttpHeaders headers,
 			@PathVariable int productId);
@@ -64,7 +62,6 @@ public interface ProductCompositeService {
 			@ApiResponse(code = 400, message = "Bad Request, invalid format of the request. See response message for more information."),
 			@ApiResponse(code = 422, message = "Unprocessable entity, input parameters caused the processing to fail. See response message for more information.")
 	})
-	//@Operation(security = { @SecurityRequirement(name = BEARER_KEY_SECURITY_SCHEME) })
-	@DeleteMapping(value = "/product-composite/{productId}")
+	@DeleteMapping(value = "/product/{productId}")
 	void deleteCompositeProduct(@PathVariable int productId);
 }

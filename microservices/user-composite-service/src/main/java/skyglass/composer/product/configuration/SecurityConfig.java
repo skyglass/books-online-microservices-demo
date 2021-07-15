@@ -12,7 +12,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.antMatchers("/api/product-composite/**").authenticated()
+				.antMatchers("/api/product/**").authenticated()
 				.anyRequest().permitAll()
 				.and()
 				.oauth2ResourceServer()

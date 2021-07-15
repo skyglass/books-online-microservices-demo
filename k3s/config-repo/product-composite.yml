@@ -88,6 +88,28 @@ spring:
           issuer-uri: https://keycloak.skycomposer.net/auth/realms/demo
           jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
 
+      client:
+        registration:
+          keycloak:
+            client-id: demoapp
+            client-secret: demoapp
+            clientName: Keycloak
+            authorization-grant-type: authorization_code
+            redirectUri: 'https://keycloak.skycomposer.net/product-composite/swagger-ui/index.html'
+            redirectUriTemplate: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+
+        provider:
+          keycloak:
+            authorization-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/auth
+            token-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/token
+            user-info-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/userinfo
+            jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
+            user-name-attribute: preferred_username          
+
 # springdoc:
 #   show-actuator: true
 #   swagger-ui:
@@ -191,6 +213,9 @@ spring.config.activate.on-profile: prod
 
 logging:
   level:
-    root: WARN
-    se.magnus: WARN
+    root: INFO
+    se.magnus: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.boot.autoconfigure: DEBUG    
     org.springframework.web.server.adapter.HttpWebHandlerAdapter: WARN
