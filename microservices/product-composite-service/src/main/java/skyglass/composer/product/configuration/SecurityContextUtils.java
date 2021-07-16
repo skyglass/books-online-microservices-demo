@@ -1,6 +1,8 @@
-package se.magnus.microservices.composite.product;
+package skyglass.composer.product.configuration;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -8,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,23 +30,36 @@ public class SecurityContextUtils {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		Authentication authentication = securityContext.getAuthentication();
 		String username = ANONYMOUS;
-
-		if (null != authentication) {
-			if (authentication.getPrincipal() instanceof UserDetails) {
-				UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-				username = springSecurityUser.getUsername();
-
-			} else if (authentication.getPrincipal() instanceof String) {
-				username = (String) authentication.getPrincipal();
-
-			} else {
-				LOGGER.debug("User details not found in Security Context");
+		if (authentication != null) {
+			Object principal = authentication.getPrincipal();
+			if (principal instanceof Jwt) {
+				Jwt jwt = (Jwt) principal;
+				username = jwt.getClaimAsString("preferred_username");
+			} else if (principal instanceof String) {
+				username = (String) principal;
 			}
-		} else {
-			LOGGER.debug("Request not authenticated, hence no user name available");
 		}
-
 		return username;
+	}
+
+	public static Map<String, Object> getUserAttributes() {
+		Map<String, Object> result = new HashMap<>();
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authentication = securityContext.getAuthentication();
+		String username = ANONYMOUS;
+		if (authentication != null) {
+			Object principal = authentication.getPrincipal();
+			if (principal instanceof Jwt) {
+				Jwt jwt = (Jwt) principal;
+				username = jwt.getClaimAsString("preferred_username");
+				result.putAll(jwt.getClaims());
+			} else if (principal instanceof String) {
+				username = (String) principal;
+			}
+		}
+		result.put("username", username);
+		result.put("roles", SecurityContextUtils.getUserRoles());
+		return result;
 	}
 
 	public static Set<String> getUserRoles() {

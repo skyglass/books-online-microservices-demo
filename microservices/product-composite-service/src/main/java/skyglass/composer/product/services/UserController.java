@@ -1,5 +1,7 @@
 package skyglass.composer.product.services;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import reactor.core.publisher.Mono;
+import skyglass.composer.product.configuration.SecurityContextUtils;
 
 // import org.springframework.security.oauth2.client.annotation.OAuth2Client;
 
@@ -27,6 +30,9 @@ public class UserController {
 
 	@Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
 	private String tokenUri;
+
+	@Value("${spring.security.oauth2.client.provider.keycloak.user-info-uri}")
+	private String userInfoUri;
 
 	@ApiOperation(value = "JWT Token")
 	@GetMapping(value = "/jwt-token", produces = "text/html")
@@ -49,6 +55,13 @@ public class UserController {
 					return Mono.just(result);
 				}).block();
 		return "Bearer " + jwtToken;
+	}
+
+	@ApiOperation(value = "Current User Info")
+	@GetMapping(value = "/current-user-info", produces = "application/json")
+	public Map<String, Object> userInfo() {
+		Map<String, Object> userAttributes = SecurityContextUtils.getUserAttributes();
+		return userAttributes;
 	}
 
 }
