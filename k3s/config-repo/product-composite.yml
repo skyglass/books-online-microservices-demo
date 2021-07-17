@@ -112,7 +112,8 @@ spring:
 
 # opentracing.jaeger.udp-sender.host: tracing.istio-system.svc.cluster.local
 # opentracing.jaeger.udp-sender.port: 80
-# opentracing.jaeger.log-spans: true
+opentracing.jaeger.http-sender.url: http://tracing.istio-system.svc.cluster.local/api/traces
+opentracing.jaeger.log-spans: true
 
 # springdoc:
 #   show-actuator: true

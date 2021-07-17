@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.annotation.ContinueSpan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -95,6 +96,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	}
 
 	@Override
+	@ContinueSpan
 	public ProductAggregate getCompositeProduct(HttpHeaders requestHeaders, int productId) {
 
 		LOG.info("Will get composite product info for product.id={} and username={}", productId, SecurityContextUtils.getUserName());
