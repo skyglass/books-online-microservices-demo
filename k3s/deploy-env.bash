@@ -49,5 +49,7 @@ kubectl create secret generic mysql-credentials \
 
 # Deploy the resources and wait for their pods to become ready
 kubectl apply -f ../k3s
+kubectl apply -f ../k3s-dashboard
+kubectl apply -f ../k3s-dashboard
 kubectl wait --timeout=600s --for=condition=ready pod --all
 kubectl wait --timeout=600s --for=condition=available deployment --all
