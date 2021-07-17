@@ -1,4 +1,4 @@
-package skyglass.composer.product.configuration;
+package se.magnus.microservices.core.product.configuration;
 
 import java.util.HashMap;
 import java.util.HashSet;

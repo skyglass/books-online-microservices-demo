@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import se.magnus.api.composite.product.ProductAggregate;
 import se.magnus.api.composite.product.ProductCompositeService;
@@ -30,6 +33,7 @@ import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
 import se.magnus.util.exceptions.InvalidInputException;
 import se.magnus.util.exceptions.NotFoundException;
+import skyglass.composer.product.configuration.SecurityContextUtils;
 
 @RestController
 @RequestMapping("/api")
@@ -43,15 +47,18 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	private final ProductCompositeIntegration integration;
 
+	private Tracer tracer;
+
 	@Autowired
-	public ProductCompositeServiceImpl(ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
+	public ProductCompositeServiceImpl(ServiceUtil serviceUtil, ProductCompositeIntegration integration, Tracer tracer) {
 		this.serviceUtil = serviceUtil;
 		this.integration = integration;
+		this.tracer = tracer;
 	}
 
 	@Override
 	public void createCompositeProduct(ProductAggregate body) {
-		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).then().block();
+		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).block();
 	}
 
 	public void internalCreateCompositeProduct(SecurityContext sc, ProductAggregate body) {
@@ -90,24 +97,27 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	@Override
 	public ProductAggregate getCompositeProduct(HttpHeaders requestHeaders, int productId) {
 
-		LOG.info("Will get composite product info for product.id={}", productId);
+		LOG.info("Will get composite product info for product.id={} and username={}", productId, SecurityContextUtils.getUserName());
+		Span span = tracer.activeSpan();
+		span.log(String.format("Will get composite product info for product.id=%s and username=%s", productId, SecurityContextUtils.getUserName()));
+		span.setTag("username", SecurityContextUtils.getUserName());
 
 		HttpHeaders headers = getHeaders(requestHeaders, "X-group");
 
 		return Mono.zip(
 				values -> createProductAggregate((SecurityContext) values[0], (Product) values[1], (List<Recommendation>) values[2], (List<Review>) values[3], serviceUtil.getServiceAddress()),
 				ReactiveSecurityContextHolder.getContext().defaultIfEmpty(nullSC),
-				integration.getProduct(headers, productId, 0, 0)
+				Mono.just(integration.getProduct(headers, productId, 0, 0))
 						.onErrorReturn(CallNotPermittedException.class, getProductFallbackValue(productId)),
-				integration.getRecommendations(headers, productId).collectList(),
-				integration.getReviews(headers, productId).collectList())
+				Flux.fromIterable(integration.getRecommendations(headers, productId)).collectList(),
+				Flux.fromIterable(integration.getReviews(headers, productId)).collectList())
 				.doOnError(ex -> LOG.warn("getCompositeProduct failed: {}", ex.toString()))
 				.log(null, FINE).block();
 	}
 
 	@Override
 	public void deleteCompositeProduct(int productId) {
-		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).then().block();
+		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).block();
 	}
 
 	private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {

@@ -18,8 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import reactor.core.publisher.Mono;
 import skyglass.composer.product.configuration.SecurityContextUtils;
 
-// import org.springframework.security.oauth2.client.annotation.OAuth2Client;
-
 @RestController
 @RequestMapping("/api/user")
 @Api(description = "REST API for user information.")

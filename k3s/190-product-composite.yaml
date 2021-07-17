@@ -10,11 +10,6 @@ spec:
       app: product-composite
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "4004"
-        prometheus.io/scheme: http
-        prometheus.io/path: "/actuator/prometheus"
       labels:
         app: product-composite
         version: v1
