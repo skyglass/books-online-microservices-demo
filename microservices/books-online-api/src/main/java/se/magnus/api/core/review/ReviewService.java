@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import reactor.core.publisher.Flux;
+
 public interface ReviewService {
 
 	Review createReview(@RequestBody Review body);
@@ -17,7 +19,7 @@ public interface ReviewService {
 	 * @return
 	 */
 	@GetMapping(value = "/review", produces = "application/json")
-	Iterable<Review> getReviews(@RequestHeader HttpHeaders headers, @RequestParam(value = "productId", required = true) int productId);
+	Flux<Review> getReviews(@RequestHeader HttpHeaders headers, @RequestParam(value = "productId", required = true) int productId);
 
 	void deleteReviews(@RequestParam(value = "productId", required = true) int productId);
 }

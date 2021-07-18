@@ -79,15 +79,13 @@ public class SecurityContextUtils {
 			Object principal = authentication.getPrincipal();
 			if (principal instanceof Jwt) {
 				Jwt jwt = (Jwt) principal;
-				if (LOG.isDebugEnabled()) {
-					URL issuer = jwt.getIssuer();
-					List<String> audience = jwt.getAudience();
-					Object subject = jwt.getClaims().get("sub");
-					Object scopes = jwt.getClaims().get("scope");
-					Object expires = jwt.getClaims().get("exp");
+				URL issuer = jwt.getIssuer();
+				List<String> audience = jwt.getAudience();
+				Object subject = jwt.getClaims().get("sub");
+				Object scopes = jwt.getClaims().get("scope");
+				Object expires = jwt.getClaims().get("exp");
 
-					LOG.info("Authorization info: Subject: {}, scopes: {}, expires {}: issuer: {}, audience: {}", subject, scopes, expires, issuer, audience);
-				}
+				LOG.info("Authorization info: Subject: {}, scopes: {}, expires {}: issuer: {}, audience: {}", subject, scopes, expires, issuer, audience);
 			} else if (principal instanceof String) {
 				username = (String) principal;
 				LOG.info("Authorization info: Username: {}", username);

@@ -8,14 +8,17 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.annotation.ContinueSpan;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import reactor.core.publisher.Mono;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.product.ProductService;
+import se.magnus.microservices.core.product.configuration.SecurityContextUtils;
 import se.magnus.microservices.core.product.persistence.ProductEntity;
 import se.magnus.microservices.core.product.persistence.ProductRepository;
 import se.magnus.util.exceptions.InvalidInputException;
@@ -23,6 +26,7 @@ import se.magnus.util.exceptions.NotFoundException;
 import se.magnus.util.http.ServiceUtil;
 
 @RestController
+@RequestMapping("/api")
 public class ProductServiceImpl implements ProductService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductServiceImpl.class);
@@ -33,11 +37,14 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductMapper mapper;
 
+	private final Tracer tracer;
+
 	@Autowired
-	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
+	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil, Tracer tracer) {
 		this.repository = repository;
 		this.mapper = mapper;
 		this.serviceUtil = serviceUtil;
+		this.tracer = tracer;
 	}
 
 	@Override
@@ -58,7 +65,6 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	@ContinueSpan
 	public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
 
 		if (productId < 1)
@@ -70,7 +76,11 @@ public class ProductServiceImpl implements ProductService {
 		if (faultPercent > 0)
 			throwErrorIfBadLuck(faultPercent);
 
-		LOG.info("Will get product info for id={}", productId);
+		Span span = tracer.activeSpan();
+		span.log(String.format("Will get product info for product.id=%s and username=%s", productId, SecurityContextUtils.getUserName()));
+		span.setTag("username2", SecurityContextUtils.getUserName());
+
+		LOG.info("Will get product info for product.id={} and username={}", productId, SecurityContextUtils.getUserName());
 
 		return repository.findByProductId(productId)
 				.switchIfEmpty(error(new NotFoundException("No product found for productId: " + productId)))

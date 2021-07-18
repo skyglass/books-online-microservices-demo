@@ -34,6 +34,46 @@ logging:
     se.magnus: DEBUG
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak.skycomposer.net/auth/realms/demo
+          jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
+
+      client:
+        registration:
+          keycloak:
+            client-id: demoapp
+            client-secret: demoapp
+            clientName: Keycloak
+            authorization-grant-type: authorization_code
+            redirectUri: 'https://keycloak.skycomposer.net/product-composite/swagger-ui/index.html'
+            redirectUriTemplate: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - openid
+              - profile
+              - email
+
+        provider:
+          keycloak:
+            authorization-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/auth
+            token-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/token
+            user-info-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/userinfo
+            jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+
+opentracing:
+  jaeger:
+    log-spans: true
+    enable-b3-propagation: true
+    enabled: true
+    http-sender:
+      url: http://jaeger-collector.istio-system:14268/api/traces
+
+
 ---
 spring.config.activate.on-profile: docker
 
@@ -62,6 +102,9 @@ spring.data.mongodb.host: mongodb
 
 logging:
   level:
-    root: WARN
-    se.magnus: WARN
-    org.springframework.data.mongodb.core.MongoTemplate: WARN
+    root: INFO
+    skyglass.composer: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.boot.autoconfigure: DEBUG    
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: WARN

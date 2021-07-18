@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import se.magnus.api.composite.product.ProductAggregate;
 import se.magnus.api.composite.product.ProductCompositeService;
@@ -104,10 +103,10 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 		return Mono.zip(
 				values -> createProductAggregate((SecurityContext) values[0], (Product) values[1], (List<Recommendation>) values[2], (List<Review>) values[3], serviceUtil.getServiceAddress()),
 				ReactiveSecurityContextHolder.getContext().defaultIfEmpty(nullSC),
-				Mono.just(integration.getProduct(headers, productId, 0, 0))
+				integration.getProduct(headers, productId, 0, 0)
 						.onErrorReturn(CallNotPermittedException.class, getProductFallbackValue(productId)),
-				Flux.fromIterable(integration.getRecommendations(headers, productId)).collectList(),
-				Flux.fromIterable(integration.getReviews(headers, productId)).collectList())
+				integration.getRecommendations(headers, productId).collectList(),
+				integration.getReviews(headers, productId).collectList())
 				.doOnError(ex -> LOG.warn("getCompositeProduct failed: {}", ex.toString()))
 				.log(null, FINE).block();
 	}
@@ -135,16 +134,17 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 		}
 	}
 
-	private HttpHeaders getHeaders(HttpHeaders requesthHeaders, String... headers) {
+	private HttpHeaders getHeaders(HttpHeaders requestHeaders, String... headers) {
 		LOG.trace("Will look for {} headers: {}", headers.length, headers);
 		HttpHeaders h = new HttpHeaders();
 		for (String header : headers) {
-			List<String> value = requesthHeaders.get(header);
+			List<String> value = requestHeaders.get(header);
 			if (value != null) {
 				h.addAll(header, value);
 			}
 		}
-		LOG.trace("Will transfer {}, headers: {}", h.size(), h);
+		h.add("authorization", requestHeaders.getFirst("authorization"));
+		LOG.info("Will transfer {}, headers: {}", h.size(), h);
 		return h;
 	}
 

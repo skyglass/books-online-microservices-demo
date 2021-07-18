@@ -25,6 +25,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.product.ProductService;
 import se.magnus.api.core.recommendation.Recommendation;
@@ -42,7 +44,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeIntegration.class);
 
-	private final String productServiceUrl = "http://product";
+	private final String productServiceUrl = "http://product/api";
 
 	private final String recommendationServiceUrl = "http://recommendation";
 
@@ -99,7 +101,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	//@Retry(name = "product")
 	//@CircuitBreaker(name = "product")
 	@Override
-	public Product getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
+	public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
 
 		URI url = UriComponentsBuilder.fromUriString(productServiceUrl + "/product/{productId}").build(productId);
 		LOG.debug("Will call the getProduct API on URL: {}", url);
@@ -108,7 +110,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 				.headers(h -> h.addAll(headers))
 				.retrieve().bodyToMono(Product.class).log(null, FINE)
 				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex))
-				.timeout(Duration.ofSeconds(productServiceTimeoutSec)).block();
+				.timeout(Duration.ofSeconds(productServiceTimeoutSec));
 	}
 
 	@Override
@@ -123,14 +125,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	}
 
 	@Override
-	public Iterable<Recommendation> getRecommendations(HttpHeaders headers, int productId) {
+	public Flux<Recommendation> getRecommendations(HttpHeaders headers, int productId) {
 
 		URI url = UriComponentsBuilder.fromUriString(recommendationServiceUrl + "/recommendation?productId={productId}").build(productId);
 
 		LOG.debug("Will call the getRecommendations API on URL: {}", url);
 
 		// Return an empty result if something goes wrong to make it possible for the composite service to return partial responses
-		return getWebClient().get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Recommendation.class).log(null, FINE).onErrorResume(error -> empty()).toIterable();
+		return getWebClient().get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Recommendation.class).log(null, FINE).onErrorResume(error -> empty());
 	}
 
 	@Override
@@ -145,14 +147,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	}
 
 	@Override
-	public Iterable<Review> getReviews(HttpHeaders headers, int productId) {
+	public Flux<Review> getReviews(HttpHeaders headers, int productId) {
 
 		URI url = UriComponentsBuilder.fromUriString(reviewServiceUrl + "/review?productId={productId}").build(productId);
 
 		LOG.debug("Will call the getReviews API on URL: {}", url);
 
 		// Return an empty result if something goes wrong to make it possible for the composite service to return partial responses
-		return getWebClient().get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Review.class).log(null, FINE).onErrorResume(error -> empty()).toIterable();
+		return getWebClient().get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Review.class).log(null, FINE).onErrorResume(error -> empty());
 
 	}
 

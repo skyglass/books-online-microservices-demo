@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import reactor.core.publisher.Flux;
+
 public interface RecommendationService {
 
 	Recommendation createRecommendation(@RequestBody Recommendation body);
@@ -19,7 +21,7 @@ public interface RecommendationService {
 	 * @return
 	 */
 	@GetMapping(value = "/recommendation", produces = "application/json")
-	Iterable<Recommendation> getRecommendations(@RequestHeader HttpHeaders headers, @RequestParam(value = "productId", required = true) int productId);
+	Flux<Recommendation> getRecommendations(@RequestHeader HttpHeaders headers, @RequestParam(value = "productId", required = true) int productId);
 
 	void deleteRecommendations(@RequestParam(value = "productId", required = true) int productId);
 }
