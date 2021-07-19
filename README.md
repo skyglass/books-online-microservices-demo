@@ -316,9 +316,9 @@ Make sure that all pods in default namespace have 2 containers
 
 ## Step-10: Test "Books Online" Microservices with Swagger UI:
 
-- create new product with "**/product-composite/api/product** POST" endpoint in "**product-composite-service-imple**" section: set "**productId**", "**recommendationId**" and "**reviewId**" to "**1**"
+- create new product with "**/product-composite/api/product** POST" endpoint in "**product-composite-service-impl**" section: set "**productId**", "**recommendationId**" and "**reviewId**" to "**1**"
 
-- get product with "**/product-composite/api/product/{productId}** GET" endpoint in "**product-composite-service-imple**" section: set "**productId**" to "**1**"
+- get product with "**/product-composite/api/product/{productId}** GET" endpoint in "**product-composite-service-impl**" section: set "**productId**" to "**1**"
 
 - make sure that the product is successfully returned ("**200 OK**" response)
 
@@ -346,14 +346,14 @@ Make sure that all pods in default namespace have 2 containers
 
 
 ### Congratulations! You sucessfully deployed Books Online Microservices with Jaeger Distributed Tracing, Swagger UI REST API Client and Keycloak OAuth2 Authorization Server on AWS with Terraform and K3S!
-- ### Now you can deploy your own docker containers to this cluster with minimal costs from AWS!
-- ### You significantly reduced your AWS bills by removing AWS EKS and NAT gateway!
-- #### You also implemented Istio Gateway, which acts as a Gateway API for your microservices
-- #### Now you can add any number of microservices to your K3S Kubernetes Cluster and use only one Istio Gateway for all these microservices 
+- #### Now you can deploy your own docker containers to this cluster with minimal costs from AWS!
+- #### You significantly reduced your AWS bills by removing AWS EKS and NAT gateway!
+- ##### You also implemented Istio Gateway, which acts as a Gateway API for your microservices
+- ##### Now you can add any number of microservices to your K3S Kubernetes Cluster and use only one Istio Gateway for all these microservices 
 
 - ### You successfully deployed Keycloak OAuth2 Authorization Server, which can be used to create new Users and manage their Authorization with JWT Tokens
 - ### You successfully deployed Swagger UI with Keycloak JWT Token Authorization, which can be used to easily authorize and test your REST API endpoints 
-- #### You successfully deployed Jaeger Distributed Tracing and learned how to trace any request, which spans several microservices. You also learned how to add custom tags and logs to any distributed tracing span
+- ### You successfully deployed Jaeger Distributed Tracing and learned how to trace any request, which spans several microservices. You also learned how to add custom tags and logs to any distributed tracing span
 - #### You learned how to propagate JWT Token from one microservice to another and how to add current user information to any distributed tracing span
 - #### You also learned how to use Kubernetes ConfigMap and Secrets to externalize you Spring Boot Microservices Deployment Configuration
 - #### You externally exposed all these tools on your own registerd domain, with secured HTTPS connection
