@@ -10,7 +10,7 @@
 
 **Kiali Management Console:** **https://istio.skycomposer.net/kiali**
 
-# Books Online Microservices Demo on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Swagger UI REST API Client, Keycloak OAuth2 Authorization Server, Jaeger Distributed Tracing, Kiali Management Console and Grafana Monitoring Dashboard:
+# Books Online Microservices Demo on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Jaeger Distributed Tracing, Swagger UI REST API Client, Keycloak OAuth2 Authorization Server, Kiali Management Console and Grafana Monitoring Dashboard:
 
 ## Step 01 - Setup terraform account on AWS:
 #### Skip to Step 02, if you already have working Terraform account with all permissions
@@ -223,24 +223,13 @@ export KUBECONFIG=./ks3/k3s.yaml
 
 
 
-## Step-04: Deploy Istio Service Mesh to AWS K3S Cluster:
+## Step-04: Prepare Istio Service Mesh Command-Line Tool:
 
 - install "**istioctl**" command-line tool (see installation options for your operating system, for example, in MacOS you can use "**homebrew**")
 
-- go to "**terraform**" directory and run the following commands:
-
-``` 
-export KUBECONFIG=./ks3/k3s.yaml
-
-istioctl install --set profile=demo -y
-
-kubectl label namespace default istio-injection=enabled
-``` 
-
-From now on, every pod in your default namespace will be injected with Istio Sidecar Proxy
 
 
-## Step-05: Deploy Keycloak, "Books Online" Microservices and Istio Gateway to AWS K3S Cluster:
+## Step-05: Prepare Keycloak Deployment, Microservices Deployment and Istio Gateway:
 
 - go to "**k3s**" folder of this github repository
 
@@ -252,20 +241,9 @@ From now on, every pod in your default namespace will be injected with Istio Sid
 
 - Edit "**config-repo/product.yml**": replace "**istio.skycomposer.net**" with the name of your sub-domain ("**istio.test.com**", for example)
 
-- go back to "**terraform**" directory and run the following commands:
-
-``` 
-export KUBECONFIG=./ks3/k3s.yaml
-
-kubectl apply -f ../k3s
-
-kubectl get pods
-``` 
-
-Make sure that all pods in default namespace have 2 containers
 
 
-## Step-06: Deploy Jaeger, Grafana and Kiali to AWS K3S Cluster:
+## Step-06: Prepare Grafana and Kiali:
 
 - go to "**k3s-dashboard**" folder of this github repository
 
@@ -275,21 +253,10 @@ Make sure that all pods in default namespace have 2 containers
 
 - Edit "**kiali.yaml**": replace the value of "**tracing: url**" property: "**https://istio.skycomposer.net/jaeger**" with correspondent url of your domain ("**https://istio.test.com/jaeger**", for example)
 
-- go back to "**terraform**" directory and run the following commands:
-
-``` 
-export KUBECONFIG=./ks3/k3s.yaml
-
-kubectl apply -f ../k3s-logging
-
-kubectl apply -f ../k3s-dashboard
-``` 
-
-If you see any errors with command "**kubectl apply -f ../k3s-dashboard**", try the command again
 
 
 
-## Step-07: Deploy Istio Service Mesh to AWS K3S Cluster:
+## Step-07: Deploy all Environment to AWS K3S Cluster:
 
 - go to "**terraform**" directory and run the following commands:
 
@@ -304,6 +271,7 @@ kubectl get pods
 ``` 
 
 Make sure that all pods in default namespace have 2 containers
+
 
 
 ## Step-08: Configure your Keycloak Authorization Server:
@@ -340,7 +308,7 @@ Make sure that all pods in default namespace have 2 containers
 
 - copy returned JWT Token
 
-- click "**Authorize**" button in the top-right corner of "**Swagger UI**" page
+- click "**Authorize**" button in the top-right corner of the "**Swagger UI**" page
 
 - paste JWT Token and click "**Authorize**"
 
@@ -372,7 +340,7 @@ Make sure that all pods in default namespace have 2 containers
 
 - find "**product getProduct**" span and make sure that it has "**username-reactive=test**" Tag and 3 Logs
 
-- you can add any custom tags and any custom logs to any span! see the source code for "**product-composite**" and "**product**" microservices for more details
+- you can add any custom tags and any custom logs to any span! See the source code for "**product-composite**" and "**product**" microservices for more details
 
 
 
@@ -387,8 +355,9 @@ Make sure that all pods in default namespace have 2 containers
 - ### You successfully deployed Swagger UI with Keycloak JWT Token Authorization, which can be used to easily authorize and test your REST API endpoints 
 - #### You successfully deployed Jaeger Distributed Tracing and learned how to trace any request, which spans several microservices. You also learned how to add custom tags and logs to any distributed tracing span
 - #### You learned how to propagate JWT Token from one microservice to another and how to add current user information to any distributed tracing span
+- #### You also learned how to use Kubernetes ConfigMap and Secrets to externalize you Spring Boot Microservices Deployment Configuration
 - #### You externally exposed all these tools on your own registerd domain, with secured HTTPS connection
-- #### Now you can share these links to provide Distributed Tracing, Keycloak OAuth2 Authorization and Swagger UI REST API Documentation for your portfolio microservices
+- #### Now you can share these links to provide Distributed Tracing, Keycloak OAuth2 Authorization and Swagger UI REST API Documentation for your Portfolio Microservices
 
 
 ## Step-09: Clean-Up:
