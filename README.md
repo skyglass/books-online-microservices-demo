@@ -10,7 +10,7 @@
 
 **Kiali Management Console:** **https://istio.skycomposer.net/kiali**
 
-# Books Online Microservices Demo on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Jaeger Distributed Tracing, Swagger UI REST API Client, Keycloak OAuth2 Authorization Server, Kiali Management Console and Grafana Monitoring Dashboard:
+## Books Online Microservices Demo on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Jaeger Distributed Tracing, Swagger UI REST API Client, Keycloak OAuth2 Authorization Server, Kiali Management Console and Grafana Monitoring Dashboard:
 
 ## Step 01 - Setup terraform account on AWS:
 #### Skip to Step 02, if you already have working Terraform account with all permissions
