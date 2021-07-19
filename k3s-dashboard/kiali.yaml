@@ -110,10 +110,10 @@ data:
         enabled: true
       grafana:
         in_cluster_url: "http://grafana.istio-system:3000"      
-        url: "https://keycloak.skycomposer.net/grafana/"
+        url: "https://istio.skycomposer.net/grafana/"
       tracing:
         in_cluster_url: "http://tracing.istio-system/jaeger"
-        url: "https://keycloak.skycomposer.net/jaeger"
+        url: "https://istio.skycomposer.net/jaeger"
     identity:
       cert_file: ""
       private_key_file: ""

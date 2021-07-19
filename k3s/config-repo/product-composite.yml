@@ -85,8 +85,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://keycloak.skycomposer.net/auth/realms/demo
-          jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
+          issuer-uri: https://istio.skycomposer.net/auth/realms/demo
+          jwk-set-uri: https://istio.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
 
       client:
         registration:
@@ -95,7 +95,7 @@ spring:
             client-secret: demoapp
             clientName: Keycloak
             authorization-grant-type: authorization_code
-            redirectUri: 'https://keycloak.skycomposer.net/product-composite/swagger-ui/index.html'
+            redirectUri: 'https://istio.skycomposer.net/product-composite/swagger-ui/index.html'
             redirectUriTemplate: '{baseUrl}/login/oauth2/code/{registrationId}'
             scope:
               - openid
@@ -104,10 +104,10 @@ spring:
 
         provider:
           keycloak:
-            authorization-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/auth
-            token-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/token
-            user-info-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/userinfo
-            jwk-set-uri: https://keycloak.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
+            authorization-uri: https://istio.skycomposer.net/auth/realms/demo/protocol/openid-connect/auth
+            token-uri: https://istio.skycomposer.net/auth/realms/demo/protocol/openid-connect/token
+            user-info-uri: https://istio.skycomposer.net/auth/realms/demo/protocol/openid-connect/userinfo
+            jwk-set-uri: https://istio.skycomposer.net/auth/realms/demo/protocol/openid-connect/certs
             user-name-attribute: preferred_username
 
 opentracing:

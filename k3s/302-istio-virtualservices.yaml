@@ -4,7 +4,7 @@ metadata:
   name: keycloak
 spec:
   hosts:
-    - keycloak.skycomposer.net
+    - istio.skycomposer.net
   gateways:
     - istio-gateway
   http:
@@ -29,7 +29,7 @@ metadata:
   name: grafana
 spec:
   hosts:
-    - keycloak.skycomposer.net
+    - istio.skycomposer.net
   gateways:
     - istio-gateway
   http:
@@ -54,7 +54,7 @@ metadata:
   name: kiali
 spec:
   hosts:
-    - keycloak.skycomposer.net
+    - istio.skycomposer.net
   gateways:
     - istio-gateway
   http:
@@ -78,7 +78,7 @@ metadata:
   name: tracing
 spec:
   hosts:
-    - keycloak.skycomposer.net
+    - istio.skycomposer.net
   gateways:
     - istio-gateway
   http:
@@ -103,7 +103,7 @@ metadata:
   name: product-composite
 spec:
   hosts:
-    - keycloak.skycomposer.net
+    - istio.skycomposer.net
   gateways:
     - istio-gateway
   http:
