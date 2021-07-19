@@ -1,16 +1,16 @@
-# Guestbook Microservice
+# Books Online Microservices Demo
 
-**Guestbook Messenger App:** **https://istio.skycomposer.net**
+**Swagger UI:** **https://istio.skycomposer.net/product-composite/swagger-ui/index.html**
 
-**Kibana Dashboard:** **https://istio.skycomposer.net/kibana**
+**Keycloak Admin Console:** **https://istio.skycomposer.net**
+
+**Jaeger Distributed Tracing:** **https://istio.skycomposer.net/jaeger**
 
 **Grafana Dashboard:** **https://istio.skycomposer.net/grafana**
 
 **Kiali Management Console:** **https://istio.skycomposer.net/kiali**
 
-**Jaeger Distributed Tracing:** **https://istio.skycomposer.net/jaeger**
-
-# Microservices Monitoring on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Fluentd and Kibana Logging, Jaeger Distributed Tracing, Kiali Management Console and Grafana Monitoring Dashboard with Prometheus Datasource:
+# Books Online Microservices Demo on AWS with Terraform, K3S Kubernetes Cluster, Istio Gateway, Swagger UI REST API Client, Keycloak OAuth2 Authorization Server, Jaeger Distributed Tracing, Kiali Management Console and Grafana Monitoring Dashboard:
 
 ## Step 01 - Setup terraform account on AWS:
 #### Skip to Step 02, if you already have working Terraform account with all permissions
@@ -240,13 +240,17 @@ kubectl label namespace default istio-injection=enabled
 From now on, every pod in your default namespace will be injected with Istio Sidecar Proxy
 
 
-## Step-05: Deploy "Guestbook" Microservice and Istio Gateway to AWS K3S Cluster:
+## Step-05: Deploy Keycloak, "Books Online" Microservices and Istio Gateway to AWS K3S Cluster:
 
 - go to "**k3s**" folder of this github repository
 
 - Edit "**301-istio-gateway.yaml**": replace "**istio.skycomposer.net**" with the name of your sub-domain ("**istio.test.com**", for example)
 
 - Edit "**302-istio-virtualservices.yaml**": replace "**istio.skycomposer.net**" with the name of your sub-domain ("**istio.test.com**", for example)
+
+- Edit "**config-repo/product-composite.yml**": replace "**istio.skycomposer.net**" with the name of your sub-domain ("**istio.test.com**", for example)
+
+- Edit "**config-repo/product.yml**": replace "**istio.skycomposer.net**" with the name of your sub-domain ("**istio.test.com**", for example)
 
 - go back to "**terraform**" directory and run the following commands:
 
@@ -261,7 +265,7 @@ kubectl get pods
 Make sure that all pods in default namespace have 2 containers
 
 
-## Step-06: Deploy Kibana, Grafana, Kiali and Jaeger to AWS K3S Cluster:
+## Step-06: Deploy Jaeger, Grafana and Kiali to AWS K3S Cluster:
 
 - go to "**k3s-dashboard**" folder of this github repository
 
@@ -284,44 +288,115 @@ kubectl apply -f ../k3s-dashboard
 If you see any errors with command "**kubectl apply -f ../k3s-dashboard**", try the command again
 
 
-## Step-07: Test Kibana Logging Dashboard:
 
-- go to "**https://istio.test.com**"
-- you should see successfully loaded "**Guestbook**" page
-- Submit several messages
-- go to "**https://istio.test.com/kibana**"
-- Configure Kibana Dashboard (Create Index Pattern, Discover Logs, Create Visualizations, Create Dashboard)
-- make sure that filter ```kubernetes.pod_name : guestbook and log : *guestbook*``` returns logs related to your last activity on "**Guestbook**" page
-- make sure that filter ```kubernetes.pod_name : guestbook and log : *200*``` shows successfull HTTP Responses
+## Step-07: Deploy Istio Service Mesh to AWS K3S Cluster:
+
+- go to "**terraform**" directory and run the following commands:
+
+``` 
+export KUBECONFIG=./ks3/k3s.yaml
+
+sh ../k3s/deploy-env.bash (MacOS)
+
+bash ../k3s/deploy-env.bash (Windows)
+
+kubectl get pods
+``` 
+
+Make sure that all pods in default namespace have 2 containers
+
+
+## Step-08: Configure your Keycloak Authorization Server:
+
+- go to "**https://istio.test.com/**"
+
+- you will be redirected to **Keycloak Home Page**
+
+- go to "**Administration Console**" and login with admin credentials:
+
+###### **admin user:** admin@keycloak
+
+###### **admin password:** my-keycloak-password
+
+- create new Realm with the name **demo**
+
+- create new Client with the name **demoapp**, Client Protocol **openid-connect** and Access Type **public**
+
+- create new User with the name **test**, go to **Credentials** tab, set password to **test** and **Temporary** flag to **OFF**
 
 
 
-## Step-08: Test Grafana, Kiali and Jaeger Dashboards:
+## Step-09: Test "Books Online" Microservices with Swagger UI:
 
-- go to "**https://istio.test.com/grafana**"
-- you should see successfully loaded "**Grafana**" dashboard
-- go to "**https://istio.test.com/kiali**"
-- you should see successfully loaded "**Kiali**" dashboard
+- go to "**https://istio.test.com/product-composite/swagger-ui/index.html**"
+
+- try any REST endpoint in "**product-composite-service-impl**" section: you should get "**401 Unauthorized Error" response
+
+- try "**/product-composite/api/user/jwt-token**" endpoint in "**user-controller**" section:
+
+###### **username:** test
+
+###### **password:** test
+
+- copy returned JWT Token
+
+- click "**Authorize**" button in the top-right corner of "**Swagger UI**" page
+
+- paste JWT Token and click "**Authorize**"
+
+
+
+## Step-10: Test "Books Online" Microservices with Swagger UI:
+
+- create new product with "**/product-composite/api/product** POST" endpoint in "**product-composite-service-imple**" section: set "**productId**", "**recommendationId**" and "**reviewId**" to "**1**"
+
+- get product with "**/product-composite/api/product/{productId}** GET" endpoint in "**product-composite-service-imple**" section: set "**productId**" to "**1**"
+
+- make sure that the product is successfully returned ("**200 OK**" response)
+
+
+
+## Step-11: Test Jaeger Distributed Tracing:
+
 - go to "**https://istio.test.com/jaeger**"
+
 - you should see successfully loaded "**Jaeger**" dashboard
 
+- select "**product-composite**" Service, select "**username=test**" Tags and click "**Find Traces**"
+
+- you should see at least one Trace, with 13 spans
+
+- click on any Trace
+
+- find "**product-composite getCompositeProduct**" span and make sure that it has "**username=test**" Tag and 5 Logs
+
+- find "**product getProduct**" span and make sure that it has "**username-reactive=test**" Tag and 3 Logs
+
+- you can add any custom tags and any custom logs to any span! see the source code for "**product-composite**" and "**product**" microservices for more details
 
 
 
-### Congratulations! You sucessfully deployed Kibana Logging Dashboard, Grafana Monitoring Dashboard, Kiali Mangament Console and Jaeger Distributed Tracing on AWS with Terraform and K3S!
+
+### Congratulations! You sucessfully deployed Books Online Microservices with Jaeger Distributed Tracing, Swagger UI REST API Client and Keycloak OAuth2 Authorization Server on AWS with Terraform and K3S!
 - ### Now you can deploy your own docker containers to this cluster with minimal costs from AWS!
 - ### You significantly reduced your AWS bills by removing AWS EKS and NAT gateway!
 - #### You also implemented Istio Gateway, which acts as a Gateway API for your microservices
 - #### Now you can add any number of microservices to your K3S Kubernetes Cluster and use only one Istio Gateway for all these microservices 
 
-- ### You successfully deployed Guestbook Messenger App, which can be used to easily generate any number of logs for Kibana and Istio Dashboards
-- #### You successfully deployed and exposed Kibana Logging Dashboard, Grafana Monitoring Dashboard, Kiali Management Console and Jaeger Distributed Tracing
+- ### You successfully deployed Keycloak OAuth2 Authorization Server, which can be used to create new Users and manage their Authorization with JWT Tokens
+- ### You successfully deployed Swagger UI with Keycloak JWT Token Authorization, which can be used to easily authorize and test your REST API endpoints 
+- #### You successfully deployed Jaeger Distributed Tracing and learned how to trace any request, which spans several microservices. You also learned how to add custom tags and logs to any distributed tracing span
+- #### You learned how to propagate JWT Token from one microservice to another and how to add current user information to any distributed tracing span
 - #### You externally exposed all these tools on your own registerd domain, with secured HTTPS connection
-- #### Now you can share these links to provide Centralized Logging and Monitoring for your portfolio applications
+- #### Now you can share these links to provide Distributed Tracing, Keycloak OAuth2 Authorization and Swagger UI REST API Documentation for your portfolio microservices
 
 
 ## Step-09: Clean-Up:
 
 ```
+sh ../k3s/delete-env.bash (MacOS)
+
+bash ../k3s/delete-env.bash (Windows)
+
 terraform destroy --auto-approve  
 ```
