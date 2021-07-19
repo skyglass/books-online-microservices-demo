@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
@@ -23,8 +23,7 @@ public class SecurityContextUtils {
 	private SecurityContextUtils() {
 	}
 
-	public static String getUserName() {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
+	public static String getUserName(SecurityContext securityContext) {
 		Authentication authentication = securityContext.getAuthentication();
 		String username = ANONYMOUS;
 		if (authentication != null) {
@@ -39,9 +38,8 @@ public class SecurityContextUtils {
 		return username;
 	}
 
-	public static Map<String, Object> getUserAttributes() {
+	public static Map<String, Object> getUserAttributes(SecurityContext securityContext) {
 		Map<String, Object> result = new HashMap<>();
-		SecurityContext securityContext = SecurityContextHolder.getContext();
 		Authentication authentication = securityContext.getAuthentication();
 		String username = ANONYMOUS;
 		if (authentication != null) {
@@ -55,12 +53,11 @@ public class SecurityContextUtils {
 			}
 		}
 		result.put("username", username);
-		result.put("roles", SecurityContextUtils.getUserRoles());
+		result.put("roles", SecurityContextUtils.getUserRoles(securityContext));
 		return result;
 	}
 
-	public static Set<String> getUserRoles() {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
+	public static Set<String> getUserRoles(SecurityContext securityContext) {
 		Authentication authentication = securityContext.getAuthentication();
 		Set<String> roles = new HashSet<>();
 
@@ -72,7 +69,7 @@ public class SecurityContextUtils {
 	}
 
 	public static void logAuthorizationInfo(Logger LOG) {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
+		SecurityContext securityContext = ReactiveSecurityContextHolder.getContext().block();
 		Authentication authentication = securityContext.getAuthentication();
 		String username = ANONYMOUS;
 		if (authentication != null) {

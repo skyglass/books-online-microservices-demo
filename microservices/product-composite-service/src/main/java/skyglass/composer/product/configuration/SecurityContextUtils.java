@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
@@ -71,9 +72,11 @@ public class SecurityContextUtils {
 		return roles;
 	}
 
-	public static void logAuthorizationInfo(Logger LOG) {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		Authentication authentication = securityContext.getAuthentication();
+	public static void logAuthorizationInfo(SecurityContext sc, Logger LOG) {
+		if (sc == null) {
+			sc = new SecurityContextImpl();
+		}
+		Authentication authentication = sc.getAuthentication();
 		String username = ANONYMOUS;
 		if (authentication != null) {
 			Object principal = authentication.getPrincipal();

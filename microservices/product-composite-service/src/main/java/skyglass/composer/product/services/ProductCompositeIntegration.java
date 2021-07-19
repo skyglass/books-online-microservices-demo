@@ -56,6 +56,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
 	private WebClient webClient;
 
+	private WebClient authorizedWebClient;
+
 	private final MessageSources messageSources;
 
 	private final int productServiceTimeoutSec;
@@ -83,13 +85,15 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 			WebClient.Builder webClientBuilder,
 			ObjectMapper mapper,
 			MessageSources messageSources,
-			@Value("${app.product-service.timeoutSec}") int productServiceTimeoutSec
+			@Value("${app.product-service.timeoutSec}") int productServiceTimeoutSec,
+			WebClient webClient
 
 	) {
 		this.webClientBuilder = webClientBuilder;
 		this.mapper = mapper;
 		this.messageSources = messageSources;
 		this.productServiceTimeoutSec = productServiceTimeoutSec;
+		this.authorizedWebClient = webClient;
 	}
 
 	@Override
@@ -106,7 +110,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 		URI url = UriComponentsBuilder.fromUriString(productServiceUrl + "/product/{productId}").build(productId);
 		LOG.debug("Will call the getProduct API on URL: {}", url);
 
-		return getWebClient().get().uri(url)
+		return getAuthorizedWebClient().get().uri(url)
 				.headers(h -> h.addAll(headers))
 				.retrieve().bodyToMono(Product.class).log(null, FINE)
 				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex))
@@ -168,6 +172,10 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 			webClient = webClientBuilder.build();
 		}
 		return webClient;
+	}
+
+	private WebClient getAuthorizedWebClient() {
+		return authorizedWebClient;
 	}
 
 	private Throwable handleException(Throwable ex) {

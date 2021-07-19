@@ -16,7 +16,7 @@ class SecurityConfig {
 				.httpBasic().disable()
 				.formLogin().disable()
 				.authorizeExchange()
-				.pathMatchers("/api/product/**", "/product/**").authenticated()
+				.pathMatchers("/api/product/**").authenticated()
 				.anyExchange().permitAll()
 				.and()
 				.oauth2ResourceServer()

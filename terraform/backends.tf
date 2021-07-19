@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "skyglass-keycloak"
+    bucket = "skycomposer-istio"
     key    = "terraform/backend"
-    region = "us-west-1"
+    region = "us-west-2"
   }
 }

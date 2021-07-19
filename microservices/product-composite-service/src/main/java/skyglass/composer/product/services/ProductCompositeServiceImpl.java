@@ -9,9 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,8 +36,6 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceImpl.class);
 
-	private final SecurityContext nullSC = new SecurityContextImpl();
-
 	private final ServiceUtil serviceUtil;
 
 	private final ProductCompositeIntegration integration;
@@ -54,14 +51,14 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	@Override
 	public void createCompositeProduct(ProductAggregate body) {
-		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalCreateCompositeProduct(sc, body)).block();
+		internalCreateCompositeProduct(SecurityContextHolder.getContext(), body);
 	}
 
 	public void internalCreateCompositeProduct(SecurityContext sc, ProductAggregate body) {
 
 		try {
 
-			SecurityContextUtils.logAuthorizationInfo(LOG);
+			SecurityContextUtils.logAuthorizationInfo(sc, LOG);
 
 			LOG.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
 
@@ -99,10 +96,11 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 		span.setTag("username", SecurityContextUtils.getUserName());
 
 		HttpHeaders headers = getHeaders(requestHeaders, "X-group");
+		SecurityContext sc = SecurityContextHolder.getContext();
 
 		return Mono.zip(
 				values -> createProductAggregate((SecurityContext) values[0], (Product) values[1], (List<Recommendation>) values[2], (List<Review>) values[3], serviceUtil.getServiceAddress()),
-				ReactiveSecurityContextHolder.getContext().defaultIfEmpty(nullSC),
+				Mono.just(sc),
 				integration.getProduct(headers, productId, 0, 0)
 						.onErrorReturn(CallNotPermittedException.class, getProductFallbackValue(productId)),
 				integration.getRecommendations(headers, productId).collectList(),
@@ -113,12 +111,12 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	@Override
 	public void deleteCompositeProduct(int productId) {
-		ReactiveSecurityContextHolder.getContext().doOnSuccess(sc -> internalDeleteCompositeProduct(sc, productId)).block();
+		internalDeleteCompositeProduct(SecurityContextHolder.getContext(), productId);
 	}
 
 	private void internalDeleteCompositeProduct(SecurityContext sc, int productId) {
 		try {
-			SecurityContextUtils.logAuthorizationInfo(LOG);
+			SecurityContextUtils.logAuthorizationInfo(sc, LOG);
 
 			LOG.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 
@@ -143,8 +141,8 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 				h.addAll(header, value);
 			}
 		}
-		h.add("authorization", requestHeaders.getFirst("authorization"));
-		LOG.info("Will transfer {}, headers: {}", h.size(), h);
+		h.add("Authorization", requestHeaders.getFirst("authorization"));
+		LOG.trace("Will transfer {}, headers: {}", h.size(), h);
 		return h;
 	}
 
@@ -172,7 +170,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
 	private ProductAggregate createProductAggregate(SecurityContext sc, Product product, List<Recommendation> recommendations, List<Review> reviews, String serviceAddress) {
 
-		SecurityContextUtils.logAuthorizationInfo(LOG);
+		SecurityContextUtils.logAuthorizationInfo(sc, LOG);
 
 		// 1. Setup product info
 		int productId = product.getProductId();

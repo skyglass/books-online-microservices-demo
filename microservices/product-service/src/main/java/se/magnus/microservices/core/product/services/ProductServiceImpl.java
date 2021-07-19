@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,6 +69,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
 
+		return ReactiveSecurityContextHolder.getContext().flatMap(sc -> getProduct(sc, headers, productId, delay, faultPercent));
+	}
+
+	private Mono<Product> getProduct(SecurityContext sc, HttpHeaders headers, int productId, int delay, int faultPercent) {
+
 		if (productId < 1)
 			throw new InvalidInputException("Invalid productId: " + productId);
 
@@ -77,10 +84,10 @@ public class ProductServiceImpl implements ProductService {
 			throwErrorIfBadLuck(faultPercent);
 
 		Span span = tracer.activeSpan();
-		span.log(String.format("Will get product info for product.id=%s and username=%s", productId, SecurityContextUtils.getUserName()));
-		span.setTag("username2", SecurityContextUtils.getUserName());
+		span.log(String.format("Will get product info for product.id=%s and username=%s", productId, SecurityContextUtils.getUserName(sc)));
+		span.setTag("username-reactive", SecurityContextUtils.getUserName(sc));
 
-		LOG.info("Will get product info for product.id={} and username={}", productId, SecurityContextUtils.getUserName());
+		LOG.info("Will get product info for product.id={} and username={}", productId, SecurityContextUtils.getUserName(sc));
 
 		return repository.findByProductId(productId)
 				.switchIfEmpty(error(new NotFoundException("No product found for productId: " + productId)))
