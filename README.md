@@ -171,6 +171,8 @@ shared_credentials_file = "/Users/dddd/.aws/credentials"
 profile_account = "ops-account"
 ```
 
+- make sure that file "**terraform.auto.tfvars**" is added to "**.gitignore**" file, to prevent its accidental deployment to github repository
+
 - make sure you provide correct path for "**public_key_path**" and "**private_key_path**"
 
 - make sure you provide correct "**certifcate_arn**" for your AWS certificate, registered to your domain. You need to register your domain and create certificate for your domain in AWS
