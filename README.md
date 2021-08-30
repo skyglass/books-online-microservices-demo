@@ -201,7 +201,7 @@ terraform apply --auto-approve
 
 - terraform will automatically create KUBECONFIG file, so you can switch to your created K3S Kubernetes cluster by using
 ```
-export KUBECONFIG=./ks3/k3s.yaml
+export KUBECONFIG=./k3s/k3s.yaml
 ``` 
 
 
@@ -263,7 +263,7 @@ export KUBECONFIG=./ks3/k3s.yaml
 - go to "**terraform**" directory and run the following commands:
 
 ``` 
-export KUBECONFIG=./ks3/k3s.yaml
+export KUBECONFIG=./k3s/k3s.yaml
 
 sh ../k3s/deploy-env.bash (MacOS)
 
