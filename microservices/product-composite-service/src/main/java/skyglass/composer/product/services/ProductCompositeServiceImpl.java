@@ -135,12 +135,14 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 	private HttpHeaders getHeaders(HttpHeaders requestHeaders, String... headers) {
 		LOG.trace("Will look for {} headers: {}", headers.length, headers);
 		HttpHeaders h = new HttpHeaders();
-		for (String header : headers) {
-			List<String> value = requestHeaders.get(header);
-			if (value != null) {
-				h.addAll(header, value);
-			}
-		}
+		/*
+		 * for (String header : headers) {
+		 * List<String> value = requestHeaders.get(header);
+		 * if (value != null) {
+		 * h.addAll(header, value);
+		 * }
+		 * }
+		 */
 		h.add("Authorization", requestHeaders.getFirst("authorization"));
 		LOG.trace("Will transfer {}, headers: {}", h.size(), h);
 		return h;

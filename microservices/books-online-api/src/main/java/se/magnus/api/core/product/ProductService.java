@@ -29,6 +29,13 @@ public interface ProductService {
 			@RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
 			@RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent);
 
+	@GetMapping(value = "/product-ext/{productId}", produces = "application/json")
+	Mono<Product> getProductExt(
+			@RequestHeader HttpHeaders headers,
+			@PathVariable int productId,
+			@RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
+			@RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent);
+
 	@DeleteMapping(value = "/product/{productId}")
 	void deleteProduct(@PathVariable int productId);
 }

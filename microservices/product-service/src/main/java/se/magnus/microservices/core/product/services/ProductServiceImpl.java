@@ -41,12 +41,15 @@ public class ProductServiceImpl implements ProductService {
 
 	private final Tracer tracer;
 
+	private final ProductIntegration productIntegration;
+
 	@Autowired
-	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil, Tracer tracer) {
+	public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil, Tracer tracer, ProductIntegration productIntegration) {
 		this.repository = repository;
 		this.mapper = mapper;
 		this.serviceUtil = serviceUtil;
 		this.tracer = tracer;
+		this.productIntegration = productIntegration;
 	}
 
 	@Override
@@ -66,10 +69,13 @@ public class ProductServiceImpl implements ProductService {
 		return newEntity.block();
 	}
 
+	public Mono<Product> getProductExt(HttpHeaders headers, int productId, int delay, int faultPercent) {
+		return ReactiveSecurityContextHolder.getContext().flatMap(sc -> getProduct(sc, headers, productId, delay, faultPercent));
+	}
+
 	@Override
 	public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
-
-		return ReactiveSecurityContextHolder.getContext().flatMap(sc -> getProduct(sc, headers, productId, delay, faultPercent));
+		return productIntegration.getProduct(headers, productId, delay, faultPercent);
 	}
 
 	private Mono<Product> getProduct(SecurityContext sc, HttpHeaders headers, int productId, int delay, int faultPercent) {

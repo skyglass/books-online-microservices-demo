@@ -20,3 +20,4 @@ kubectl delete secret mysql-credentials
 
 # Delete all resources
 kubectl delete -f ../k3s
+kubectl delete -f ../k3s-dashboard

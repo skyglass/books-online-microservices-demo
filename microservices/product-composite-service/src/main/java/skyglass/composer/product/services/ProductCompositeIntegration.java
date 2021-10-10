@@ -118,6 +118,19 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 	}
 
 	@Override
+	public Mono<Product> getProductExt(HttpHeaders headers, int productId, int delay, int faultPercent) {
+
+		URI url = UriComponentsBuilder.fromUriString(productServiceUrl + "/product/{productId}").build(productId);
+		LOG.debug("Will call the getProduct API on URL: {}", url);
+
+		return getAuthorizedWebClient().get().uri(url)
+				.headers(h -> h.addAll(headers))
+				.retrieve().bodyToMono(Product.class).log(null, FINE)
+				.onErrorMap(WebClientResponseException.class, ex -> handleException(ex))
+				.timeout(Duration.ofSeconds(productServiceTimeoutSec));
+	}
+
+	@Override
 	public void deleteProduct(int productId) {
 		messageSources.outputProducts().send(MessageBuilder.withPayload(new Event(DELETE, productId, null)).build());
 	}
