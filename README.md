@@ -171,6 +171,8 @@ shared_credentials_file = "/Users/dddd/.aws/credentials"
 profile_account = "ops-account"
 ```
 
+- make sure that file "**terraform.auto.tfvars**" is added to "**.gitignore**" file, to prevent its accidental deployment to github repository
+
 - make sure you provide correct path for "**public_key_path**" and "**private_key_path**"
 
 - make sure you provide correct "**certifcate_arn**" for your AWS certificate, registered to your domain. You need to register your domain and create certificate for your domain in AWS
@@ -199,7 +201,7 @@ terraform apply --auto-approve
 
 - terraform will automatically create KUBECONFIG file, so you can switch to your created K3S Kubernetes cluster by using
 ```
-export KUBECONFIG=./ks3/k3s.yaml
+export KUBECONFIG=./k3s/k3s.yaml
 ``` 
 
 
@@ -261,7 +263,7 @@ export KUBECONFIG=./ks3/k3s.yaml
 - go to "**terraform**" directory and run the following commands:
 
 ``` 
-export KUBECONFIG=./ks3/k3s.yaml
+export KUBECONFIG=./k3s/k3s.yaml
 
 sh ../k3s/deploy-env.bash (MacOS)
 
