@@ -11,4 +11,4 @@ spec:
       name: http-web
       protocol: HTTP
     hosts:
-    - "keycloak.skycomposer.net"
+    - "istio.skycomposer.net"
