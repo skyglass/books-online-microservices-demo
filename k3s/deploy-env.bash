@@ -51,6 +51,7 @@ kubectl create secret generic mysql-credentials \
 kubectl apply -f ../k3s
 kubectl apply -f ../k3s-dashboard
 kubectl apply -f ../k3s-dashboard
+kubectl apply -f ../k3s-logging
 
 kubectl wait --timeout=600s --for=condition=ready pod --all
 kubectl wait --timeout=600s --for=condition=available deployment --all
