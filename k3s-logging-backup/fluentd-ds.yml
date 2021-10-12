@@ -1,28 +1,86 @@
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: myself-as-cluster-admin
+  namespace: kube-system 
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: User
+  name: skyglass2001@gmail.com
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluentd
+  namespace: kube-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: fluentd
+  namespace: kube-system 
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: fluentd
+roleRef:
+  kind: ClusterRole
+  name: fluentd
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: fluentd
+  namespace: kube-system
+
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd
-  namespace: kube-system
+  namespace: kube-system  
   labels:
-    app: fluentd
+    k8s-app: fluentd-logging
     version: v1
+    kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
-      app: fluentd
+      k8s-app: fluentd-logging
       version: v1
+      kubernetes.io/cluster-service: "true"
   template:
     metadata:
       labels:
-        app: fluentd
+        k8s-app: fluentd-logging
         version: v1
+        kubernetes.io/cluster-service: "true"
     spec:
+      serviceAccount: fluentd
+      serviceAccountName: fluentd
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
       - name: fluentd
-        image: hands-on/fluentd:v1
+        image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
         env:
           - name:  FLUENT_ELASTICSEARCH_HOST
             value: "elasticsearch.logging"
@@ -32,6 +90,8 @@ spec:
             value: "http"
           - name: FLUENT_ELASTICSEARCH_SED_DISABLE
             value: "true"
+          - name: FLUENT_CONTAINER_TAIL_PARSER_TYPE
+            value: /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
         resources:
           limits:
             cpu: 500m
@@ -62,5 +122,5 @@ spec:
           path: /run/log/journal
       - name: fluentd-extra-config
         configMap:
-          name: "fluentd-hands-on-config"
-      terminationGracePeriodSeconds: 30
+          name: "fluentd-config"
+      terminationGracePeriodSeconds: 30       
