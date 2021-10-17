@@ -138,7 +138,7 @@ spec:
           prefix: /kibana
       route:
         - destination:
-            host: kibana.logging.svc.cluster.local
+            host: elastic-istio-kb-http.logging.svc.cluster.local
             port:
               number: 5601            
           headers:
