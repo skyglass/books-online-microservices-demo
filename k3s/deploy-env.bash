@@ -51,11 +51,14 @@ kubectl create secret generic mysql-credentials \
 kubectl apply -f ../k3s
 # kubectl apply -f ../k3s-dashboard
 # kubectl apply -f ../k3s-dashboard
+
 kubectl create namespace elastic-system
 kubectl label namespace elastic-system istio-injection=enabled
+
 kubectl apply -f ../k3s-logging
 kubectl apply -f ../k3s-logging
-kubectl get secret elastic-istio-es-elastic-user -n logging  -o=jsonpath='{.data.elastic}' | base64 --decode; echo
 
 kubectl wait --timeout=600s --for=condition=ready pod --all
 kubectl wait --timeout=600s --for=condition=available deployment --all
+
+kubectl get secret elastic-istio-es-elastic-user -n logging  -o=jsonpath='{.data.elastic}' | base64 --decode; echo

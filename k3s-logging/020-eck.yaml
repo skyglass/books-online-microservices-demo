@@ -10,57 +10,44 @@ spec:
       selfSignedCertificate:
         disabled: true
   nodeSets:
-    - name: logging-elastic
-      count: 1
-      podTemplate:
-        metadata:
-          annotations:
-            traffic.sidecar.istio.io/includeInboundPorts: "*"
-            traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
-            traffic.sidecar.istio.io/excludeInboundPorts: "9300"
-        spec:
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-          containers:
-            - name: elasticsearch
-              env:
-                - name: ES_JAVA_OPTS
-                  value: "-Xms1536m -Xmx1536m"
-              resources:
-                requests:
-                  memory: 2Gi
-                  cpu: 0.5
-                limits:
-                  memory: 3Gi
-                  cpu: 2
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes:
-              - ReadWriteOnce
+  - name: default
+    count: 1
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300" 
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+      spec:
+        initContainers:
+          - name: sysctl
+            securityContext:
+              privileged: true
+            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: "-Xms1536m -Xmx1536m"
             resources:
               requests:
-                storage: 10Gi
-            storageClassName: local-path
-      config:
-        node.master: true
-        node.data: true
-        node.ingest: true
-        xpack.monitoring:
-          collection.interval: 30s
-          history.duration: 2d
-        xpack.security.authc:
-          realms:
-            native:
-              native1:
-                order: -101
-            file:
-              file1:
-                order: -100
+                memory: 2Gi
+                cpu: 0.5
+              limits:
+                memory: 3Gi
+                cpu: 2
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: local-path
+    config:
+      node.store.allow_mmap: false
  
 ---
 apiVersion: kibana.k8s.elastic.co/v1
@@ -100,3 +87,25 @@ spec:
             limits:
               memory: 2Gi
               cpu: 2
+
+---
+apiVersion: apm.k8s.elastic.co/v1
+kind: ApmServer
+metadata:
+  namespace: logging
+  name: elastic-istio
+spec:
+  version: 7.6.2
+  count: 1
+  elasticsearchRef:
+    name: elastic-istio
+  http:
+    tls: 
+      selfSignedCertificate:
+        disabled: true
+  podTemplate:
+    metadata:
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true" 
+    spec:
+      automountServiceAccountToken: true 
